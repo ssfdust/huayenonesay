@@ -5,9 +5,10 @@ extern crate dotenv;
 pub mod models;
 pub mod schema;
 
+use std::env;
+use rand::Rng;
 use diesel::prelude::*;
 use dotenv::dotenv;
-use std::env;
 use models::Saying;
 use schema::says::dsl::*;
 
@@ -20,10 +21,12 @@ pub fn establish_connection() -> SqliteConnection {
 }
 
 pub fn get_random_saying() -> String {
+    let mut rng = rand::thread_rng();
     let connection = establish_connection();
     let total: i64 = says.count().first::<i64>(&connection).unwrap();
+    let randid: i32 = rng.gen_range(1..(total as i32 + 1));
     let say: Saying = says
-        .find(total as i32)
+        .find(randid)
         .first::<Saying>(&connection)
         .unwrap();
     say.saying.to_owned()

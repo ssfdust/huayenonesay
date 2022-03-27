@@ -7,6 +7,8 @@ It's a http server that gives you one say from Avatamsaka Sūtra.
 ### 
 
 ```shell
+export BINDADDR="0.0.0.0"
+export BINDPORT=8080
 cargo run
 ```
 
