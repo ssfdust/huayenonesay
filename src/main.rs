@@ -16,6 +16,7 @@ async fn main() -> std::io::Result<()> {
     let bindaddr = env::var("BINDADDR").unwrap_or("127.0.0.1".to_owned());
     let port = env::var("BINDPORT").unwrap_or("18080".to_owned());
     let port = port.parse::<u16>().unwrap();
+    println!("Server runs on {}:{}", bindaddr, port);
     HttpServer::new(|| App::new().service(onesay))
         .bind((bindaddr.to_string(), port))?
         .run()
