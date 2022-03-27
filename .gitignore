@@ -1,3 +1,5 @@
 /target
 *.db
 database/target
+initlizer/target
+data

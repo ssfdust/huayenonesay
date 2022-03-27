@@ -1,5 +1,5 @@
 -- Your SQL goes here
 CREATE TABLE says (
-    id INT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     saying VARCHAR(2046)
 );

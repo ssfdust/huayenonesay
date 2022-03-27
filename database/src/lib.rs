@@ -9,7 +9,7 @@ use std::env;
 use rand::Rng;
 use diesel::prelude::*;
 use dotenv::dotenv;
-use models::Saying;
+use models::{Saying, NewSaying};
 use schema::says::dsl::*;
 
 pub fn establish_connection() -> SqliteConnection {
@@ -32,11 +32,22 @@ pub fn get_random_saying() -> String {
     say.saying.to_owned()
 }
 
+pub fn write_saying(conn: &SqliteConnection, say: String) {
+    let new_saying = NewSaying { saying: say.as_str() };
+    diesel::insert_into(says)
+        .values(&new_saying)
+        .execute(conn)
+        .unwrap();
+}
+
 #[cfg(test)]
 mod test{
     use super::*;
+
     #[test]
     fn test_get_random_saying() {
+        write_saying(&establish_connection(), String::from("南无大方广佛华严经，华严海会佛菩萨"));
         assert_eq!("南无大方广佛华严经，华严海会佛菩萨", get_random_saying());
     }
+
 }

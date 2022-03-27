@@ -63,6 +63,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "initlizer"
+version = "0.1.0"
+dependencies = [
+ "database",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
