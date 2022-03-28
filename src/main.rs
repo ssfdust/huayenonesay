@@ -1,24 +1,63 @@
 extern crate database;
+use actix_session::{storage::CookieSessionStore, Session, SessionMiddleware};
+use actix_web::cookie::Key;
+use actix_web::middleware::Logger;
 use actix_web::{get, web, App, HttpServer, Responder};
-use database::get_random_saying;
+use chrono::prelude::*;
+use database::{get_img_by_day, get_random_saying};
+use env_logger;
 use serde_json::json;
 use std::env;
 
 #[get("/api/huayen/onesay")]
-async fn onesay() -> impl Responder {
+async fn onesay(session: Session) -> impl Responder {
+    let onesay: String;
+    let local: DateTime<Local> = Local::now();
+    let datenowstr: String = local.format("%Y%m%d").to_string();
+    match session.get::<String>("date") {
+        Ok(Some(date)) if date.eq(&datenowstr) => {
+            onesay = session.get::<String>("onesay").unwrap().unwrap();
+        }
+        _ => {
+            onesay = get_random_saying();
+            session.insert("date", datenowstr).unwrap();
+            session.insert("onesay", &onesay).unwrap();
+        }
+    }
     web::Json(
-        json!({ "code": 0, "msg": "get one say successfully.", "data": { "onesay": get_random_saying() } }),
+        json!({ "code": 0, "msg": "get one say successfully.", "data": { "onesay": onesay } }),
     )
 }
 
-#[actix_web::main] // or #[tokio::main]
+#[get("/api/img/bg")]
+async fn get_img(_: Session) -> impl Responder {
+    let local: DateTime<Local> = Local::now();
+    web::Json(
+        json!({ "code": 0, "msg": "get background image successfully.", "data": {"url": get_img_by_day(local.day())}}),
+    )
+}
+
+#[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let bindaddr = env::var("BINDADDR").unwrap_or("127.0.0.1".to_owned());
-    let port = env::var("BINDPORT").unwrap_or("18080".to_owned());
+    let key = env::var("SESSION_KEY").unwrap_or("secret_key".to_owned());
+    let port = env::var("BINDPORT").unwrap_or("5001".to_owned());
     let port = port.parse::<u16>().unwrap();
+    env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
     println!("Server runs on {}:{}", bindaddr, port);
-    HttpServer::new(|| App::new().service(onesay))
-        .bind((bindaddr.to_string(), port))?
-        .run()
-        .await
+    HttpServer::new(move || {
+        App::new()
+            .wrap(Logger::default())
+            .wrap(
+                SessionMiddleware::builder(CookieSessionStore::default(), Key::from(key.as_ref()))
+                    .cookie_secure(false)
+                    .build(),
+            )
+            .service(onesay)
+            .service(get_img)
+    })
+    .bind((bindaddr.to_string(), port))?
+    .run()
+    .await
 }

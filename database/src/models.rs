@@ -10,3 +10,10 @@ pub struct Saying {
 pub struct NewSaying<'a> {
     pub saying: &'a str,
 }
+
+#[derive(Queryable)]
+pub struct BgImg {
+    pub id: i32,
+    pub day: i32,
+    pub url: String
+}
