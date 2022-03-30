@@ -1,0 +1,13 @@
+[Unit]
+Description=Huayen One Say Http Server
+After=network.target
+
+[Service]
+User=caddy
+Group=caddy
+WorkingDirectory=/var/lib/caddy/huayen
+Environment="BINDPORT=15001" "SESSION_KEY=sadasjkij128934u8jf8sdjf82u3874uuehfhuwehfuhewufhweuhfweuhfuwehfuhweufhseuhfsudhfuhweuhrusehfuishfiushduifhsduifhiushfiusehfui" "DATABASE_URL=huayen.db"
+ExecStart=/var/lib/caddy/huayen/huayensays
+
+[Install]
+WantedBy=multi-user.target

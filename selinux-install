@@ -1,0 +1,4 @@
+#!/bin/sh
+INSTALL_PATH=$1
+semanage port -a -t http_port_t -p tcp 15001
+chcon -u user_t -t httpd_exec_t -R ${INSTALL_PATH}
