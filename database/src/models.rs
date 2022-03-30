@@ -15,5 +15,6 @@ pub struct NewSaying<'a> {
 pub struct BgImg {
     pub id: i32,
     pub day: i32,
+    pub device: String,
     pub url: String
 }

@@ -8,6 +8,13 @@ use database::{get_img_by_day, get_random_saying};
 use env_logger;
 use serde_json::json;
 use std::env;
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct BgArgs {
+    device: String,
+}
+
 
 #[get("/api/huayen/onesay")]
 async fn onesay(session: Session) -> impl Responder {
@@ -30,10 +37,10 @@ async fn onesay(session: Session) -> impl Responder {
 }
 
 #[get("/api/img/bg")]
-async fn get_img(_: Session) -> impl Responder {
+async fn get_img(bg_args: web::Query<BgArgs>, _: Session) -> impl Responder {
     let local: DateTime<Local> = Local::now();
     web::Json(
-        json!({ "code": 0, "msg": "get background image successfully.", "data": {"url": get_img_by_day(local.day())}}),
+        json!({ "code": 0, "msg": "get background image successfully.", "data": {"url": get_img_by_day(local.day(), &bg_args.device)}}),
     )
 }
 

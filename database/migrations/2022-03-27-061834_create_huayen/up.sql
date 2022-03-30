@@ -6,6 +6,7 @@ CREATE TABLE says (
 CREATE TABLE bgimgs (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     day INTEGER NOT NULL,
+    device VARCHAR(16) NOT NULL,
     url VARCHAR(128) NOT NULL,
-    UNIQUE(day)
+    UNIQUE(day, device)
 );

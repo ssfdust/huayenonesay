@@ -2,6 +2,7 @@ table! {
     bgimgs (id) {
         id -> Integer,
         day -> Integer,
+        device -> Text,
         url -> Text,
     }
 }

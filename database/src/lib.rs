@@ -30,11 +30,11 @@ pub fn get_random_saying() -> String {
     say.saying.to_owned()
 }
 
-pub fn get_img_by_day(locate_day: u32) -> String {
+pub fn get_img_by_day(locate_day: u32, device_name: &str) -> String {
     use schema::bgimgs::dsl::*;
     let connection = establish_connection();
     bgimgs
-        .filter(day.eq(locate_day as i32))
+        .filter(day.eq(locate_day as i32).and(device.eq(device_name)))
         .first::<BgImg>(&connection)
         .and_then(|bgimg_inst| Ok(bgimg_inst.url.to_owned()))
         .unwrap_or("".to_owned())
