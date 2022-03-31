@@ -1,6 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE says (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    chapter VARCHAR(64) NOT NULL,
     saying VARCHAR(2046) NOT NULL
 );
 CREATE TABLE bgimgs (

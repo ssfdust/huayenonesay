@@ -3,6 +3,7 @@ use std::{
     fs::File,
     io::{self, BufRead, BufReader},
 };
+use std::path::Path;
 use database::{establish_connection, write_saying};
 
 fn list_filecontent(filename: &str) -> io::Result<Vec<String>> {
@@ -18,10 +19,11 @@ fn list_filecontent(filename: &str) -> io::Result<Vec<String>> {
 }
 
 pub fn convert_txt_to_db(filename: &str) {
+    let chapter = Path::new(filename).file_stem().map(|chapter| chapter.to_str().unwrap()).unwrap();
     match list_filecontent(filename) {
         Ok(contents) => {
             for content in contents {
-                write_saying(&establish_connection(), content);
+                write_saying(&establish_connection(), content, chapter.to_owned());
             }
         }
         _ => ()

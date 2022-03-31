@@ -19,20 +19,23 @@ struct BgArgs {
 #[get("/api/huayen/onesay")]
 async fn onesay(session: Session) -> impl Responder {
     let onesay: String;
+    let chapter: String;
     let local: DateTime<Local> = Local::now();
     let datenowstr: String = local.format("%Y%m%d").to_string();
     match session.get::<String>("date") {
         Ok(Some(date)) if date.eq(&datenowstr) => {
             onesay = session.get::<String>("onesay").unwrap().unwrap();
+            chapter = session.get::<String>("chapter").unwrap().unwrap();
         }
         _ => {
-            onesay = get_random_saying();
+            (onesay, chapter) = get_random_saying();
             session.insert("date", datenowstr).unwrap();
+            session.insert("chapter", &chapter).unwrap();
             session.insert("onesay", &onesay).unwrap();
         }
     }
     web::Json(
-        json!({ "code": 0, "msg": "get one say successfully.", "data": { "onesay": onesay } }),
+        json!({ "code": 0, "msg": "get one say successfully.", "data": { "onesay": onesay, "chapter": chapter } }),
     )
 }
 

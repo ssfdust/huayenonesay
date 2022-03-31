@@ -10,6 +10,7 @@ table! {
 table! {
     says (id) {
         id -> Integer,
+        chapter -> Text,
         saying -> Text,
     }
 }

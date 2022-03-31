@@ -19,15 +19,15 @@ pub fn establish_connection() -> SqliteConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-pub fn get_random_saying() -> String {
+pub fn get_random_saying() -> (String, String) {
     use schema::says::dsl::*;
 
     let mut rng = rand::thread_rng();
     let connection = establish_connection();
     let total: i64 = says.count().first::<i64>(&connection).unwrap();
     let randid: i32 = rng.gen_range(1..(total as i32 + 1));
-    let say: Saying = says.find(randid).first::<Saying>(&connection).unwrap();
-    say.saying.to_owned()
+    let onesay = says.find(randid).first::<Saying>(&connection).unwrap();
+    (onesay.saying, onesay.chapter)
 }
 
 pub fn get_img_by_day(locate_day: u32, device_name: &str) -> String {
@@ -40,10 +40,11 @@ pub fn get_img_by_day(locate_day: u32, device_name: &str) -> String {
         .unwrap_or("".to_owned())
 }
 
-pub fn write_saying(conn: &SqliteConnection, say: String) {
+pub fn write_saying(conn: &SqliteConnection, say: String, chapter_: String) {
     use schema::says::dsl::*;
     let new_saying = NewSaying {
         saying: say.as_str(),
+        chapter: chapter_.as_str()
     };
     diesel::insert_into(says)
         .values(&new_saying)
