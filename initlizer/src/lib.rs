@@ -14,6 +14,7 @@ fn list_filecontent(filename: &str) -> io::Result<Vec<String>> {
             .map(|line_in| {
                 line_in.unwrap_or(String::new())
             })
+            .filter(|line| line.trim().len() > 0)
             .collect::<Vec<String>>())
     })
 }
@@ -23,6 +24,7 @@ pub fn convert_txt_to_db(filename: &str) {
     match list_filecontent(filename) {
         Ok(contents) => {
             for content in contents {
+                println!("Write say: {}", content);
                 write_saying(&establish_connection(), content, chapter.to_owned());
             }
         }
