@@ -10,6 +10,8 @@ use serde_json::json;
 use std::env;
 use serde::Deserialize;
 
+const PRESET_KEY: &str = "djasidjasiojdioajsdioijqiwjw8i1sadjsaidjasdasjdijih2jijwaifhuasfhusdhfufhw3urh2u3hruhfuahfuahfiuhafheuihuisdhf";
+
 #[derive(Deserialize)]
 struct BgArgs {
     device: String,
@@ -20,6 +22,19 @@ struct Cached {
     onesay: String,
     chapter: String,
     date: String
+}
+
+#[get("/api/huayen/update")]
+async fn update_onesay(session: Session) -> impl Responder {
+    let local: DateTime<Local> = Local::now();
+    let datenowstr: String = local.format("%Y%m%d").to_string();
+    let (onesay_, chapter) = get_random_saying();
+    session.insert("date", &datenowstr).unwrap();
+    session.insert("chapter", &chapter).unwrap();
+    session.insert("onesay", &onesay_).unwrap();
+    web::Json(
+        json!({ "code": 0, "msg": "update one say successfully." }),
+    )
 }
 
 #[get("/api/huayen/onesay")]
@@ -68,7 +83,7 @@ async fn get_img(bg_args: web::Query<BgArgs>, _: Session) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let bindaddr = env::var("BINDADDR").unwrap_or("127.0.0.1".to_owned());
-    let key = env::var("SESSION_KEY").unwrap_or("secret_key".to_owned());
+    let key = env::var("SESSION_KEY").unwrap_or(PRESET_KEY.to_owned());
     let port = env::var("BINDPORT").unwrap_or("5001".to_owned());
     let port = port.parse::<u16>().unwrap();
     env::set_var("RUST_LOG", "actix_web=info");
@@ -84,6 +99,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(onesay)
             .service(get_img)
+            .service(update_onesay)
     })
     .bind((bindaddr.to_string(), port))?
     .run()
